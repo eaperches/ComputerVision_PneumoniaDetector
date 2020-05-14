@@ -18,9 +18,9 @@ from PIL import Image
 #%%
 #create iterators
 datagen = tf.keras.preprocessing.image.ImageDataGenerator()
-train_it = datagen.flow_from_directory('chest_xray/train/', class_mode='binary', batch_size=64, target_size = (64,64))
-val_it = datagen.flow_from_directory('chest_xray/val/', class_mode='binary', batch_size=64, target_size = (64,64))
-test_it = datagen.flow_from_directory('chest_xray/test/', class_mode='binary', batch_size=64, target_size = (64,64))
+train_it = datagen.flow_from_directory('chest_xray/train/', class_mode='binary', batch_size=163, target_size = (64,64))
+val_it = datagen.flow_from_directory('chest_xray/val/', class_mode='binary', batch_size=4, target_size = (64,64))
+test_it = datagen.flow_from_directory('chest_xray/test/', class_mode='binary', batch_size=26, target_size = (64,64))
 
 
 
@@ -196,7 +196,7 @@ def ResNet50(input_shape = (64, 64, 3), classes = 6):
 
 model = ResNet50(input_shape = (64, 64, 3), classes = 2)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-model.fit(train_it, steps_per_epoch=16, validation_data=val_it, validation_steps=8)
+model.fit(train_it, steps_per_epoch=32, validation_data=val_it, validation_steps=4)
 loss = model.evaluate_generator(test_it, steps=24)
 
 #%%
