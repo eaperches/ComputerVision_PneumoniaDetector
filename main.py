@@ -9,8 +9,7 @@ from tensorflow.keras.layers import Input, Add, Dense, Activation, ZeroPadding2D
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.imagenet_utils import preprocess_input
-import resnets_utils
-from keras.initializers import glorot_uniform
+from tensorflow.keras.initializers import glorot_uniform
 import numpy as np
 import tensorflow.keras.backend as K
 from IPython.display import display
@@ -18,7 +17,7 @@ from PIL import Image
 import os
 #%%
 #Create Iterators
-datagen = tf.keras.preprocessing.image.ImageDataGenerator()
+datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1./255)
 train_it = datagen.flow_from_directory('chest_xray/train/', class_mode='binary', batch_size=163, target_size = (64,64))
 val_it = datagen.flow_from_directory('chest_xray/val/', class_mode='binary', batch_size=4, target_size = (64,64))
 test_it = datagen.flow_from_directory('chest_xray/test/', class_mode='binary', batch_size=26, target_size = (64,64))
@@ -200,8 +199,9 @@ def ResNet50(input_shape = (64, 64, 3), classes = 6):
 model = ResNet50(input_shape = (64, 64, 3), classes = 1)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.fit(train_it, steps_per_epoch=32, validation_data=val_it, validation_steps=4)
+#%%
 loss = model.evaluate_generator(test_it, steps=24)
-
+print("%s: %.2f%%" % (model.metrics_names[1], loss[1]*100))
 #%%
 # serialize model to JSON
 model_json = model.to_json()
