@@ -98,7 +98,7 @@ def convolutional_block(X, f, filters, stage, block, s = 2):
     F1, F2, F3 = filters
     
     # Save the input value
-    X_shortcut = X
+    X_shortcut = tf.identity(X)
 
 
     ##### MAIN PATH #####
@@ -120,10 +120,12 @@ def convolutional_block(X, f, filters, stage, block, s = 2):
     X_shortcut = Conv2D(F3, (1, 1), strides=(s, s), name=conv_name_base + '1', kernel_initializer=glorot_uniform(seed=0))(X_shortcut)
     X_shortcut = BatchNormalization(axis=3, name=bn_name_base + '1')(X_shortcut)
 
-    # Final step: Add shortcut value to main path, and pass it through a RELU activation (≈2 lines)
+    # Final step: Add shortcut value to main path, and pass it through a RELU activation (≈2 lines)]
+    
     X = Add()([X, X_shortcut])
     X = Activation('relu')(X)
     
+
     
     return X
 
@@ -186,7 +188,7 @@ def ResNet50(input_shape = (64, 64, 3), classes = 6):
     # output layer
     X = Flatten()(X)
 
-    X = Dense(classes, activation='softmax', name='fc' + str(classes), kernel_initializer = glorot_uniform(seed=0))(X)
+    X = Dense(classes, activation='sigmoid', name='fc' + str(classes), kernel_initializer = glorot_uniform(seed=0))(X)
     
     # Create model
     model = Model(inputs = X_input, outputs = X, name='ResNet50')
@@ -194,7 +196,7 @@ def ResNet50(input_shape = (64, 64, 3), classes = 6):
 
     return model
 
-model = ResNet50(input_shape = (64, 64, 3), classes = 2)
+model = ResNet50(input_shape = (64, 64, 3), classes = 1)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.fit(train_it, steps_per_epoch=32, validation_data=val_it, validation_steps=4)
 loss = model.evaluate_generator(test_it, steps=24)
