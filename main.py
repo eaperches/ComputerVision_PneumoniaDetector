@@ -15,8 +15,9 @@ import numpy as np
 import tensorflow.keras.backend as K
 from IPython.display import display
 from PIL import Image
+import os
 #%%
-#create iterators
+#Create Iterators
 datagen = tf.keras.preprocessing.image.ImageDataGenerator()
 train_it = datagen.flow_from_directory('chest_xray/train/', class_mode='binary', batch_size=163, target_size = (64,64))
 val_it = datagen.flow_from_directory('chest_xray/val/', class_mode='binary', batch_size=4, target_size = (64,64))
@@ -24,7 +25,7 @@ test_it = datagen.flow_from_directory('chest_xray/test/', class_mode='binary', b
 
 
 
-#%%
+#%%Model
 
 def identity_block(X, f, filters, stage, block):
     """
@@ -202,3 +203,10 @@ model.fit(train_it, steps_per_epoch=32, validation_data=val_it, validation_steps
 loss = model.evaluate_generator(test_it, steps=24)
 
 #%%
+# serialize model to JSON
+model_json = model.to_json()
+with open("model_cache/model.json", "w") as json_file:
+    json_file.write(model_json)
+# serialize weights to HDF5
+model.save_weights("model_cache/model.h5")
+print("Saved model to disk")
