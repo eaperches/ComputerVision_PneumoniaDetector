@@ -9,6 +9,7 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.imagenet_utils import preprocess_input
 from PIL import Image
 import tensorflow as tf
+import tkinter as tk
 
 #%%
 datagen = tf.keras.preprocessing.image.ImageDataGenerator()
@@ -44,4 +45,23 @@ filenames = test_generator.filenames
 nb_samples = len(filenames)
 
 predict = loaded_model.predict_generator(test_generator,steps = nb_samples)
-print(predict)
+
+classified_as = predict[0][0] > 0.5 and "PNEUMONIA" or "NORMAL"
+print(classified_as)
+
+
+#%%
+#Front-End Gui
+from PIL import Image, ImageTk
+
+window = tk.Tk()
+image = Image.open("chest_xray/predict/pneumonia/sample.jpeg")
+photo = ImageTk.PhotoImage(image)
+label = tk.Label(image=photo)
+label.image = photo # keep a reference!
+label.pack()
+image_label = tk.Label(text="Model %s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
+image_label.pack()
+image_label = tk.Label(text="Classified as %s with sigmoid value %.2f%%" % (classified_as, predict[0][0]))
+image_label.pack()
+window.mainloop()
