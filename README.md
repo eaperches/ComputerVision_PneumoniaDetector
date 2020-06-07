@@ -1,6 +1,6 @@
 # PneumoniaDetector_ComputerVision
 
-Use of Residual Networks for Pneumonia detection in lungs xray scans.
+Use of ResNet50 for Pneumonia detection in lungs xray scans.
 
 Work in progress..
 
